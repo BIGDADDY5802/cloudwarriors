@@ -4,17 +4,17 @@ from operator import itemgetter
 ec2_client = boto3.client('ec2', region_name="us-east-1")
 
 volumes = ec2_client.describe_volumes(
-        Filters=[
-              {
-                    'Name': 'tag:Name',
-                    'Values': ['prod']
-              }
-        ]
-    )
+    Filters=[
+            {
+                'Name': 'tag:Name',
+                'Values': ['prod']
+            }
+    ]
+)
 
 for volume in volumes['Volumes']:
     snapshots = ec2_client.describe_snapshots(
-        OwnwerIds=['self'],
+        OwnerIds=['self'],
         Filters=[
             {
                 'Name': 'volume-id',

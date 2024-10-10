@@ -17,8 +17,8 @@ def create_volume_snapshots():
             VolumeId=volume['VolumeId'],
         )
         print(new_snapshot)
+        
+schedule.every(5).seconds.do(create_volume_snapshots)
 
-    schedule.every().day.do(create_volume_snapshots)
-
-    while True:
+while True:
         schedule.run_pending()

@@ -4,7 +4,7 @@ from operator import itemgetter
 ec2_client = boto3.client('ec2', region_name="us-east-1")
 ec2_resource = boto3.resource('ec2', region_name="us-east-1")
 
-instance_id = "i-0b1f1b1b1b1b1b1b1-taken-from-ec2-console"
+instance_id = "i-0f666a9081c3aec6e"  #"you take your instance id from the EC2 console"
 
 volumes = ec2_client.describe_volumes(
     Filters=[
@@ -18,7 +18,7 @@ volumes = ec2_client.describe_volumes(
 instance_volume = volumes['Volumes'][0]
 
 snapshots = ec2_client.describe_snapshots(
-    OwnwerIds=['self'],
+    OwnerIds=['self'],
     Filters=[
         {
             'Name': 'volume-id',
@@ -31,8 +31,8 @@ latest_snapshot = sorted(snapshots['Snapshots'], key=itemgetter('StartTime'), re
 print(latest_snapshot['StartTime'])
 
 new_volume = ec2_client.create_volume(
-   SnapshotId=latest_snapshot['SnapshotId'],
-    AvailabilityZone="us-east-1a" # This is the default AZ for the account and is hardcoded here for simplicity 
+    SnapshotId=latest_snapshot['SnapshotId'],
+    AvailabilityZone="us-east-1a", # This is the default AZ for the account and is hardcoded here for simplicity 
     TagSpecifications=[
         {
            'ResourceType': 'volume',
@@ -52,6 +52,6 @@ while True:
     if vol.state == 'available':
         ec2_resource.Instance(instance_id).attach_volume(
             VolumeId=new_volume['VolumeId'],
-            Device="/dev/sdf" # This is the default device name for the account and is hardcoded here for simplicity
-    )
-    break
+            Device="/dev/xvdb" # This is the default device name (located under the Storage Tab of your instance) for the account and is hardcoded here, but you need to change the last letter of the device
+        )
+        break
